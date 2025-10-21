@@ -53,5 +53,11 @@
     "updates": {
       "enabled": false
     }
+  },
+  "name": "MAST POE",
+  "version": "1.0.0",
+  "scripts": {
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   }
 }
