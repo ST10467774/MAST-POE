@@ -54,7 +54,7 @@
       "enabled": false
     }
   },
-  "name": "MAST POE",
+  "name": "mast-poe",
   "version": "1.0.0",
   "scripts": {
     "android": "expo run:android",
