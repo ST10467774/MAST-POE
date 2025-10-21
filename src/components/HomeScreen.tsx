@@ -1,9 +1,36 @@
 import { ChefHat, TrendingUp, List, Plus, SlidersHorizontal, Heart } from 'lucide-react';
-import { MenuItem } from '../App';
+import React, { useState } from 'react';
+
+interface MenuItem {
+  id: string;
+  dishName: string;
+  price: number;
+  image?: string;
+  description?: string;
+  course?: string;
+  prepTime?: string;
+}
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card } from './ui/card';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+
+const DEFAULT_PLACEHOLDER = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect fill="%23f3f4f6" width="100%" height="100%"/><text x="50%" y="50%" fill="%23909ca3" font-family="Arial" font-size="24" text-anchor="middle" dy=".3em">No image</text></svg>';
+
+type ImageWithFallbackProps = {
+  src?: string | undefined;
+  alt?: string;
+  className?: string;
+  fallback?: string;
+};
+
+function ImageWithFallback({ src, alt, className, fallback }: ImageWithFallbackProps) {
+  const [currentSrc, setCurrentSrc] = useState<string>(src || fallback || DEFAULT_PLACEHOLDER);
+  const handleError = () => {
+    const next = fallback || DEFAULT_PLACEHOLDER;
+    if (currentSrc !== next) setCurrentSrc(next);
+  };
+  return <img src={currentSrc} alt={alt} className={className} onError={handleError} />;
+}
 
 interface HomeScreenProps {
   menuItems: MenuItem[];

@@ -1,12 +1,22 @@
 import { useState } from 'react';
 import { ArrowLeft, SlidersHorizontal, Heart } from 'lucide-react';
-import { MenuItem } from '../App';
+// Local MenuItem type to avoid importing from ../App which may not export types or be in a different location
+interface MenuItem {
+  id: string;
+  dishName: string;
+  description?: string;
+  course: string;
+  price: number;
+  allergens: string[];
+  image?: string;
+  prepTime?: string;
+}
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card } from './ui/card';
 import { Slider } from './ui/slider';
 import { Label } from './ui/label';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+// Replaced ImageWithFallback with a native <img> element and inline fallback to avoid missing module
 
 interface FilterMenuProps {
   menuItems: MenuItem[];
@@ -167,10 +177,13 @@ export function FilterMenu({ menuItems, favorites, onBack, onViewDetails, onTogg
                   onClick={() => onViewDetails(item)}
                 >
                   <div className="relative aspect-square">
-                    <ImageWithFallback
-                      src={item.image}
+                    <img
+                      src={item.image ?? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='}
                       alt={item.dishName}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+                      }}
                     />
                     <Button
                       variant="ghost"

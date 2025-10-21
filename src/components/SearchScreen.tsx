@@ -1,11 +1,38 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Search, Heart, X } from 'lucide-react';
-import { MenuItem } from '../App';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card } from './ui/card';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+
+type ImageWithFallbackProps = React.ImgHTMLAttributes<HTMLImageElement> & { fallbackSrc?: string };
+
+export const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({ src, alt, fallbackSrc, onError, ...props }) => {
+  const [imgSrc, setImgSrc] = useState<string | undefined>(src as string | undefined);
+
+  return (
+    <img
+      src={imgSrc || fallbackSrc || '/placeholder.png'}
+      alt={alt}
+      onError={(e) => {
+        if (imgSrc === fallbackSrc || imgSrc === '/placeholder.png') return;
+        setImgSrc(fallbackSrc || '/placeholder.png');
+        if (onError) onError(e);
+      }}
+      {...props}
+    />
+  );
+};
+
+interface MenuItem {
+  id: string;
+  dishName: string;
+  description: string;
+  course: string;
+  image: string;
+  price: number;
+  prepTime: string;
+}
 
 interface SearchScreenProps {
   menuItems: MenuItem[];

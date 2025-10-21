@@ -1,9 +1,53 @@
 import { Heart } from 'lucide-react';
-import { MenuItem } from '../App';
+interface MenuItem {
+  id: string;
+  image?: string;
+  dishName: string;
+  description?: string;
+  price: number;
+  prepTime?: string;
+  course?: string;
+}
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card } from './ui/card';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import React, { useState } from 'react';
+
+/**
+ * Small ImageWithFallback component to avoid missing module error.
+ * Props:
+ *  - src?: string | undefined
+ *  - alt?: string
+ *  - className?: string
+ *
+ * Renders an img and falls back to a simple placeholder SVG when the image fails to load.
+ */
+export function ImageWithFallback({ src, alt = '', className }: { src?: string; alt?: string; className?: string }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return (
+      <div
+        className={className}
+        role="img"
+        aria-label={alt}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: '#f3f4f6',
+        }}
+      >
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+          <path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14" stroke="#d1d5db" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M7 13l2.5 3.01L13 11l4 6" stroke="#d1d5db" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+    );
+  }
+
+  return <img src={src} alt={alt} className={className} onError={() => setFailed(true)} />;
+}
 
 interface FavoritesScreenProps {
   menuItems: MenuItem[];

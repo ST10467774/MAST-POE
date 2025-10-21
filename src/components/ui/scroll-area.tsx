@@ -1,62 +1,44 @@
 "use client";
 
- // Use the package-provided types for "@radix-ui/react-scroll-area" (or add a dedicated
-// .d.ts file under src/types if you need to provide local ambient declarations).
-// Removing the local module augmentation prevents "Invalid module name in augmentation"
-// when TypeScript can't locate the original module declaration.
-
 import * as React from "react";
-import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
-
 import { cn } from "./utils";
 
-function ScrollArea({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
+// Minimal, dependency-free ScrollArea replacement.
+// Radix primitives are DOM-only and can cause runtime failures in non-web targets
+// (or when bundlers can't resolve package types). This lightweight component uses
+// a simple scrollable container and a no-op scrollbar element so the app runs
+// consistently across environments.
+
+type Props = React.HTMLAttributes<HTMLDivElement> & { children?: React.ReactNode };
+
+function ScrollArea({ className, children, ...props }: Props) {
   return (
-    <ScrollAreaPrimitive.Root
+    <div
       data-slot="scroll-area"
-      className={cn("relative", className)}
-      {...props}
+      className={cn("relative overflow-auto", className)}
+      {...(props as any)}
     >
-      <ScrollAreaPrimitive.Viewport
+      <div
         data-slot="scroll-area-viewport"
-        className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
+        className="size-full rounded-[inherit] outline-none"
       >
         {children}
-      </ScrollAreaPrimitive.Viewport>
+      </div>
       <ScrollBar />
-      <ScrollAreaPrimitive.Corner />
-    </ScrollAreaPrimitive.Root>
+      <div data-slot="scroll-area-corner" />
+    </div>
   );
 }
 
-function ScrollBar({
-  className,
-  orientation = "vertical",
-  ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>) {
+function ScrollBar({ className }: { className?: string }) {
+  // Render a decorative element; not functional like Radix's scrollbar but
+  // sufficient to avoid runtime import errors and keep layout similar.
   return (
-    <ScrollAreaPrimitive.ScrollAreaScrollbar
+    <div
       data-slot="scroll-area-scrollbar"
-      orientation={orientation}
-      className={cn(
-        "flex touch-none p-px transition-colors select-none",
-        orientation === "vertical" &&
-          "h-full w-2.5 border-l border-l-transparent",
-        orientation === "horizontal" &&
-          "h-2.5 flex-col border-t border-t-transparent",
-        className,
-      )}
-      {...props}
-    >
-      <ScrollAreaPrimitive.ScrollAreaThumb
-        data-slot="scroll-area-thumb"
-        className="bg-border relative flex-1 rounded-full"
-      />
-    </ScrollAreaPrimitive.ScrollAreaScrollbar>
+      className={cn("pointer-events-none absolute right-0 top-0 h-full w-2.5", className)}
+      aria-hidden
+    />
   );
 }
 

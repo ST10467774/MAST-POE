@@ -1,10 +1,50 @@
 import { ArrowLeft, Heart, Clock, Users, Wine, Flame, Trash2 } from 'lucide-react';
-import { MenuItem } from '../App';
+
+interface MenuItem {
+  id: string;
+  image: string;
+  dishName: string;
+  course: string;
+  prepTime: string;
+  servings: number;
+  price: number;
+  nutritionalInfo: {
+    calories: number | string;
+    protein: number | string;
+    carbs: number | string;
+    fat: number | string;
+  };
+  description: string;
+  winePairing?: string;
+  allergens: string[];
+}
+
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card } from './ui/card';
 import { Separator } from './ui/separator';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+const ImageWithFallback = ({ src, alt, className, ...props }: any) => {
+  const placeholder =
+    'data:image/svg+xml;utf8,' +
+    encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="24">Image not available</text></svg>`
+    );
+
+  return (
+    <img
+      src={src || placeholder}
+      alt={alt || ''}
+      className={className}
+      onError={(e) => {
+        const t = e.currentTarget as HTMLImageElement;
+        if (t.src !== placeholder) {
+          t.src = placeholder;
+        }
+      }}
+      {...props}
+    />
+  );
+};
 
 interface MenuItemDetailsProps {
   item: MenuItem;
