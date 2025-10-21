@@ -1,6 +1,6 @@
 /* @custom-variant removed: unknown at-rule; define a dark variant in Tailwind/PostCSS config instead */
 
-:root {
+const styles = `:root {
   --font-size: 16px;
   --background: #ffffff;
   --foreground: oklch(0.145 0 0);
@@ -33,7 +33,7 @@
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
+  --sidebar-primary: rgb(3, 2, 19);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
@@ -228,4 +228,6 @@
 
 html {
   font-size: var(--font-size);
-}
+}`;
+
+export default styles;
