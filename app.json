@@ -1,4 +1,10 @@
 {
+  "expo": {
+    "updates": {
+      "enabled": false,
+      "checkAutomatically": "ON_ERROR_RECOVERY"
+    }
+  },
   "android": {
     "package": "com.anonymous.mastpoe"
   }
