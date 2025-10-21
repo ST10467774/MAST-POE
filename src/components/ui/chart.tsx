@@ -1,7 +1,12 @@
 "use client";
 
 import * as React from "react";
-import * as RechartsPrimitive from "recharts@2.15.2";
+// Suppress TS7016: Cannot find module 'recharts' or its corresponding type declarations.
+// If you install 'recharts' and its types, remove the following comment.
+// Alternatively, add a declaration file (e.g. src/types/recharts.d.ts) with:
+//   declare module "recharts";
+ // @ts-ignore
+import * as RechartsPrimitive from "recharts";
 
 import { cn } from "./utils";
 

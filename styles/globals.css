@@ -1,4 +1,4 @@
-@custom-variant dark (&:is(.dark *));
+/* @custom-variant removed: unknown at-rule; define a dark variant in Tailwind/PostCSS config instead */
 
 :root {
   --font-size: 16px;

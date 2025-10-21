@@ -1,7 +1,12 @@
 "use client";
 
+ // Use the package-provided types for "@radix-ui/react-scroll-area" (or add a dedicated
+// .d.ts file under src/types if you need to provide local ambient declarations).
+// Removing the local module augmentation prevents "Invalid module name in augmentation"
+// when TypeScript can't locate the original module declaration.
+
 import * as React from "react";
-import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area@1.2.3";
+import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 
 import { cn } from "./utils";
 

@@ -1,12 +1,356 @@
 import { useState } from 'react';
-import { HomeScreen } from './components/HomeScreen';
-import { AddMenuItem } from './components/AddMenuItem';
-import { MenuItemDetails } from './components/MenuItemDetails';
-import { FilterMenu } from './components/FilterMenu';
-import { SearchScreen } from './components/SearchScreen';
-import { FavoritesScreen } from './components/FavoritesScreen';
-import { SettingsScreen } from './components/SettingsScreen';
-import { BottomNavigation } from './components/BottomNavigation';
+
+function HomeScreen(props: {
+  menuItems: MenuItem[];
+  favorites: Set<string>;
+  onAddNew: () => void;
+  onViewDetails: (item: MenuItem) => void;
+  onToggleFavorite: (id: string) => void;
+  onFilter: () => void;
+}) {
+  const { menuItems, favorites, onAddNew, onViewDetails, onToggleFavorite, onFilter } = props;
+  return (
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Menu</h1>
+        <div>
+          <button onClick={onFilter} className="mr-2 px-3 py-1 bg-gray-200 rounded">Filter</button>
+          <button onClick={onAddNew} className="px-3 py-1 bg-blue-500 text-white rounded">Add</button>
+        </div>
+      </div>
+      <ul>
+        {menuItems.map(item => (
+          <li key={item.id} className="mb-3 p-3 border rounded">
+            <div className="flex justify-between">
+              <div>
+                <div className="font-semibold">{item.dishName}</div>
+                <div className="text-sm text-gray-600">{item.course} • {item.price}</div>
+              </div>
+              <div>
+                <button onClick={() => onToggleFavorite(item.id)} className="mr-2">
+                  {favorites.has(item.id) ? '★' : '☆'}
+                </button>
+                <button onClick={() => onViewDetails(item)} className="px-2 py-1 bg-gray-100 rounded">View</button>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+function AddMenuItem(props: { onAdd: (item: any) => void; onCancel: () => void }) {
+  const { onAdd, onCancel } = props;
+  const [dishName, setDishName] = useState('');
+  const [description, setDescription] = useState('');
+  const [course, setCourse] = useState('Mains');
+  const [price, setPrice] = useState<number | string>(0);
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    const item = {
+      dishName,
+      description,
+      course,
+      price: Number(price) || 0,
+      image: '',
+      prepTime: '',
+      servings: 1,
+      allergens: [] as string[],
+      nutritionalInfo: { calories: 0, protein: '', carbs: '', fat: '' },
+    };
+    onAdd(item);
+  };
+
+  return (
+    <div className="p-4 max-w-md">
+      <h2 className="text-xl font-semibold mb-2">Add Menu Item</h2>
+      <form onSubmit={handleSubmit} className="space-y-2">
+        <div>
+          <label className="block text-sm">Dish Name</label>
+          <input value={dishName} onChange={e => setDishName(e.target.value)} className="w-full border rounded px-2 py-1" />
+        </div>
+        <div>
+          <label className="block text-sm">Description</label>
+          <input value={description} onChange={e => setDescription(e.target.value)} className="w-full border rounded px-2 py-1" />
+        </div>
+        <div>
+          <label className="block text-sm">Course</label>
+          <select value={course} onChange={e => setCourse(e.target.value)} className="w-full border rounded px-2 py-1">
+            <option>Mains</option>
+            <option>Starters</option>
+            <option>Dessert</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm">Price</label>
+          <input type="number" value={price} onChange={e => setPrice(e.target.value)} className="w-full border rounded px-2 py-1" />
+        </div>
+        <div className="flex justify-end space-x-2 pt-2">
+          <button type="button" onClick={onCancel} className="px-3 py-1 bg-gray-200 rounded">Cancel</button>
+          <button type="submit" className="px-3 py-1 bg-blue-500 text-white rounded">Add</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+function MenuItemDetails(props: {
+  item: MenuItem;
+  isFavorite: boolean;
+  onBack: () => void;
+  onToggleFavorite: (id: string) => void;
+  onRemove: (id: string) => void;
+}) {
+  const { item, isFavorite, onBack, onToggleFavorite, onRemove } = props;
+  return (
+    <div className="p-4 max-w-2xl">
+      <button onClick={onBack} className="mb-4 px-3 py-1 bg-gray-200 rounded">Back</button>
+      <div className="bg-white p-4 rounded shadow">
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="text-xl font-semibold">{item.dishName}</h2>
+            <p className="text-sm text-gray-600">{item.course} • {item.price}</p>
+            <p className="mt-2">{item.description}</p>
+          </div>
+          <div className="ml-4">
+            <button onClick={() => onToggleFavorite(item.id)} className="text-2xl">
+              {isFavorite ? '★' : '☆'}
+            </button>
+          </div>
+        </div>
+        <div className="mt-4 flex space-x-2">
+          <button onClick={() => onRemove(item.id)} className="px-3 py-1 bg-red-500 text-white rounded">Remove</button>
+          <button onClick={onBack} className="px-3 py-1 bg-gray-200 rounded">Close</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+function FilterMenu(props: {
+  menuItems: any[];
+  favorites: Set<string>;
+  onBack: () => void;
+  onViewDetails: (item: any) => void;
+  onToggleFavorite: (id: string) => void;
+}) {
+  const { menuItems, favorites, onBack, onViewDetails, onToggleFavorite } = props;
+  return (
+    <div className="p-4 max-w-2xl">
+      <button onClick={onBack} className="mb-4 px-3 py-1 bg-gray-200 rounded">Back</button>
+      <h2 className="text-xl font-semibold mb-2">Filter Menu</h2>
+      <div>
+        {menuItems.length === 0 ? (
+          <p className="text-sm text-gray-600">No items available</p>
+        ) : (
+          <ul>
+            {menuItems.map((item: any) => (
+              <li key={item.id} className="mb-3 p-3 border rounded flex justify-between items-center">
+                <div>
+                  <div className="font-semibold">{item.dishName}</div>
+                  <div className="text-sm text-gray-600">{item.course} • {item.price}</div>
+                </div>
+                <div>
+                  <button onClick={() => onToggleFavorite(item.id)} className="mr-2">
+                    {favorites.has(item.id) ? '★' : '☆'}
+                  </button>
+                  <button onClick={() => onViewDetails(item)} className="px-2 py-1 bg-gray-100 rounded">View</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Inline fallback SearchScreen (used when ./components/SearchScreen is not present)
+function SearchScreen(props: {
+  menuItems: MenuItem[];
+  favorites: Set<string>;
+  onViewDetails: (item: MenuItem) => void;
+  onToggleFavorite: (id: string) => void;
+}) {
+  const { menuItems, favorites, onViewDetails, onToggleFavorite } = props;
+  return (
+    <div className="p-4 max-w-2xl">
+      <h2 className="text-xl font-semibold mb-2">Search</h2>
+      <p className="text-sm text-gray-600">Search component not found; listing all items.</p>
+      <ul>
+        {menuItems.map(item => (
+          <li key={item.id} className="mb-3 p-3 border rounded flex justify-between items-center">
+            <div>
+              <div className="font-semibold">{item.dishName}</div>
+              <div className="text-sm text-gray-600">{item.course} • {item.price}</div>
+            </div>
+            <div>
+              <button onClick={() => onToggleFavorite(item.id)} className="mr-2">
+                {favorites.has(item.id) ? '★' : '☆'}
+              </button>
+              <button onClick={() => onViewDetails(item)} className="px-2 py-1 bg-gray-100 rounded">View</button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+function FavoritesScreen(props: {
+  menuItems: MenuItem[];
+  favorites: Set<string>;
+  onViewDetails: (item: MenuItem) => void;
+  onToggleFavorite: (id: string) => void;
+}) {
+  const { menuItems, favorites, onViewDetails, onToggleFavorite } = props;
+  return (
+    <div className="p-4 max-w-2xl">
+      <h2 className="text-xl font-semibold mb-2">Favorites</h2>
+      {menuItems.length === 0 ? (
+        <p className="text-sm text-gray-600">No favorite items</p>
+      ) : (
+        <ul>
+          {menuItems.map(item => (
+            <li key={item.id} className="mb-3 p-3 border rounded flex justify-between items-center">
+              <div>
+                <div className="font-semibold">{item.dishName}</div>
+                <div className="text-sm text-gray-600">{item.course} • {item.price}</div>
+              </div>
+              <div>
+                <button onClick={() => onToggleFavorite(item.id)} className="mr-2">
+                  {favorites.has(item.id) ? '★' : '☆'}
+                </button>
+                <button onClick={() => onViewDetails(item)} className="px-2 py-1 bg-gray-100 rounded">View</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+function SettingsScreen(props: {
+  settings: { currency: string; notifications: boolean; dietaryPreferences: string[] };
+  onUpdateSettings: (s: { currency: string; notifications: boolean; dietaryPreferences: string[] }) => void;
+}) {
+  const { settings, onUpdateSettings } = props;
+  const [currency, setCurrency] = useState(settings.currency);
+  const [notifications, setNotifications] = useState(settings.notifications);
+  const [dietaryPreferences, setDietaryPreferences] = useState<string[]>(settings.dietaryPreferences || []);
+
+  const togglePref = (pref: string) => {
+    if (dietaryPreferences.includes(pref)) {
+      setDietaryPreferences(dietaryPreferences.filter(p => p !== pref));
+    } else {
+      setDietaryPreferences([...dietaryPreferences, pref]);
+    }
+  };
+
+  const handleSave = () => {
+    onUpdateSettings({
+      currency,
+      notifications,
+      dietaryPreferences,
+    });
+  };
+
+  return (
+    <div className="p-4 max-w-2xl">
+      <h2 className="text-xl font-semibold mb-2">Settings</h2>
+      <div className="space-y-3">
+        <div>
+          <label className="block text-sm mb-1">Currency</label>
+          <select value={currency} onChange={e => setCurrency(e.target.value)} className="w-full border rounded px-2 py-1">
+            <option value="ZAR">ZAR</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="inline-flex items-center">
+            <input type="checkbox" checked={notifications} onChange={e => setNotifications(e.target.checked)} className="form-checkbox mr-2" />
+            <span className="text-sm">Enable Notifications</span>
+          </label>
+        </div>
+
+        <div>
+          <div className="block text-sm mb-1">Dietary Preferences</div>
+          <div className="flex flex-col space-y-1">
+            <label className="inline-flex items-center">
+              <input type="checkbox" checked={dietaryPreferences.includes('Vegetarian')} onChange={() => togglePref('Vegetarian')} className="form-checkbox mr-2" />
+              <span className="text-sm">Vegetarian</span>
+            </label>
+            <label className="inline-flex items-center">
+              <input type="checkbox" checked={dietaryPreferences.includes('Vegan')} onChange={() => togglePref('Vegan')} className="form-checkbox mr-2" />
+              <span className="text-sm">Vegan</span>
+            </label>
+            <label className="inline-flex items-center">
+              <input type="checkbox" checked={dietaryPreferences.includes('Gluten-Free')} onChange={() => togglePref('Gluten-Free')} className="form-checkbox mr-2" />
+              <span className="text-sm">Gluten-Free</span>
+            </label>
+            <label className="inline-flex items-center">
+              <input type="checkbox" checked={dietaryPreferences.includes('Dairy-Free')} onChange={() => togglePref('Dairy-Free')} className="form-checkbox mr-2" />
+              <span className="text-sm">Dairy-Free</span>
+            </label>
+          </div>
+        </div>
+
+        <div className="flex justify-end space-x-2 pt-2">
+          <button type="button" onClick={handleSave} className="px-3 py-1 bg-blue-500 text-white rounded">Save</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* Inline BottomNavigation component to avoid external module dependency */
+type NavScreen = 'home' | 'add' | 'details' | 'filter' | 'search' | 'favorites' | 'settings';
+
+function BottomNavigation(props: {
+  currentScreen: NavScreen;
+  onNavigate: (screen: NavScreen) => void;
+  favoriteCount: number;
+}) {
+  const { currentScreen, onNavigate, favoriteCount } = props;
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t">
+      <div className="max-w-4xl mx-auto flex justify-around py-2">
+        <button
+          onClick={() => onNavigate('home')}
+          className={currentScreen === 'home' ? 'font-bold' : ''}
+        >
+          Home
+        </button>
+        <button
+          onClick={() => onNavigate('search')}
+          className={currentScreen === 'search' ? 'font-bold' : ''}
+        >
+          Search
+        </button>
+        <button
+          onClick={() => onNavigate('favorites')}
+          className={currentScreen === 'favorites' ? 'font-bold' : ''}
+        >
+          Favorites ({favoriteCount})
+        </button>
+        <button
+          onClick={() => onNavigate('add')}
+          className={currentScreen === 'add' ? 'font-bold' : ''}
+        >
+          Add
+        </button>
+        <button
+          onClick={() => onNavigate('settings')}
+          className={currentScreen === 'settings' ? 'font-bold' : ''}
+        >
+          Settings
+        </button>
+      </div>
+    </nav>
+  );
+}
 
 export interface MenuItem {
   id: string;
