@@ -203,8 +203,6 @@ All pricing is displayed in South African Rands (R) to reflect the local market,
   
 
   ## 10. Changelog
-# Changelog
-
 All notable changes to the MAST POE project will be documented in this file.
 
 ## Version 2.0.0 (October 22, 2025) - Complete React Native Migration
