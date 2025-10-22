@@ -198,6 +198,17 @@ All pricing is displayed in South African Rands (R) to reflect the local market,
 * Uses AsyncStorage for persistence.
 * You can clear stored data by uninstalling the app.
 
+  ## 9. Screenshots
+
+  
+
+  ## 10. Changelog
+
+
+
+
+  ## 11. References
+
 
 
 
