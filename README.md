@@ -410,7 +410,7 @@ If updating from v1.x:
 
 ---
 
-## 11. References
+## 11. References for VS code
 #### Core Technologies
 *  **React Native Documentation**  
    React Native · Learn once, write anywhere  
@@ -463,7 +463,6 @@ If updating from v1.x:
     https://reactnative.dev/docs/flatlist  
     Accessed: October 2025
 ### Design & Styling
-
 *  **React Native StyleSheet**  
     StyleSheet · React Native  
     https://reactnative.dev/docs/stylesheet  
@@ -586,6 +585,28 @@ If updating from v1.x:
     React Native is MIT licensed  
     https://github.com/facebook/react-native/blob/main/LICENSE  
     Accessed: October 2025
+
+   ## References list for app
+
+* Caitlyn Engelbrecht (2025) Mobile App Prototype Design for Chef Christoffel. Figma. Available at: https://www.figma.com/make/Yf0JVPshQaOPcCv1vzqwLy/Mobile-App-Prototype-Design
+ (Accessed: 8 September 2025).
+* Figma (2025) Figma Interface and Prototyping Tool. Available at: https://www.figma.com/
+ (Accessed: 8 September 2025).
+* React Native (2025) React Native Documentation. Available at: https://reactnative.dev/
+ (Accessed: 9 September 2025).
+* React Native (2025) React Native View Component Documentation. Available at: https://reactnative.dev/docs/view
+ (Accessed: 9 September 2025).
+* React Navigation (2025) React Navigation Documentation. Available at: https://reactnavigation.org/docs/getting-started
+ (Accessed: 9 September 2025).
+* React Native Vector Icons (2025) Documentation for react-native-vector-icons. Available at: https://github.com/oblador/react-native-vector-icons
+ (Accessed: 9 September 2025).
+* @react-native-community/checkbox (2025) React Native Checkbox Documentation. Available at: https://github.com/react-native-checkbox/react-native-checkbox
+ (Accessed: 9 September 2025).
+* Expo (2025) Expo Framework Documentation. Available at: https://docs.expo.dev/
+ (Accessed: 9 September 2025).
+* Mobile App Scripting (2025) The Independent Institute of Education (Pty) Ltd 2025 Learning Guide.
+* OpenAI (ChatGPT) (2025) Assistance with App Structure, Documentation and Explanations. OpenAI. Available at: https://chat.openai.com/
+ (Accessed: 9 September 2025).
 
 ---
 
