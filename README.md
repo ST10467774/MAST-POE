@@ -407,22 +407,207 @@ If updating from v1.x:
 - Created modular component architecture
 - Set up GitHub repository with proper documentation
 
+---
+
+## 11. References
+#### Core Technologies
+*  **React Native Documentation**  
+   React Native · Learn once, write anywhere  
+   https://reactnative.dev/docs/getting-started  
+   Accessed: October 2025
+*  **TypeScript Documentation**  
+   TypeScript: JavaScript With Syntax For Types  
+   https://www.typescriptlang.org/docs/  
+   Accessed: October 2025
+*  **Expo Documentation**  
+   Expo Documentation  
+   https://docs.expo.dev/  
+   Accessed: October 2025
+*  **React Documentation**  
+   React – A JavaScript library for building user interfaces  
+   https://react.dev/  
+   Accessed: October 2025
+#### Navigation & UI Libraries
+*  **React Navigation**  
+   React Navigation · Routing and navigation for React Native apps  
+   https://reactnavigation.org/docs/getting-started  
+   Accessed: October 2025
+*  **React Native Vector Icons**  
+   oblador/react-native-vector-icons: Customizable Icons for React Native  
+   https://github.com/oblador/react-native-vector-icons  
+   Accessed: October 2025
+*  **React Native Community Slider**  
+   @react-native-community/slider  
+   https://github.com/callstack/react-native-slider  
+   Accessed: October 2025
+*  **React Native Picker**  
+   @react-native-picker/picker  
+   https://github.com/react-native-picker/picker  
+   Accessed: October 2025
+### Learning Resources
+*  **React Native Tutorial - Meta**  
+   Introduction · React Native  
+   https://reactnative.dev/docs/tutorial  
+   Accessed: October 2025
+*  **TypeScript Handbook**  
+    The TypeScript Handbook  
+    https://www.typescriptlang.org/docs/handbook/intro.html  
+    Accessed: October 2025
+*  **React Hooks Documentation**  
+    Hooks API Reference – React  
+    https://react.dev/reference/react  
+    Accessed: October 2025
+*  **FlatList Performance Guide**  
+    FlatList · React Native  
+    https://reactnative.dev/docs/flatlist  
+    Accessed: October 2025
+### Design & Styling
+
+*  **React Native StyleSheet**  
+    StyleSheet · React Native  
+    https://reactnative.dev/docs/stylesheet  
+    Accessed: October 2025
+*  **React Native Animated API**  
+    Animated · React Native  
+    https://reactnative.dev/docs/animated  
+    Accessed: October 2025
+*  **React Native Appearance API**  
+    Appearance · React Native  
+    https://reactnative.dev/docs/appearance  
+    Accessed: October 2025
+### Development Tools
+*  **Expo CLI Documentation**  
+    Expo CLI - Expo Documentation  
+    https://docs.expo.dev/workflow/expo-cli/  
+    Accessed: October 2025
+*  **Metro Bundler**  
+    Metro · The JavaScript Bundler for React Native  
+    https://facebook.github.io/metro/  
+    Accessed: October 2025
+*  **VS Code for React Native**  
+    React Native Tools - Visual Studio Marketplace  
+    https://marketplace.visualstudio.com/items?itemName=msjsdiag.vscode-react-native  
+    Accessed: October 2025
+### Best Practices & Patterns
+*  **React Native Performance**  
+    Performance Overview · React Native  
+    https://reactnative.dev/docs/performance  
+    Accessed: October 2025
+*  **React Context API Guide**  
+    Context – React  
+    https://react.dev/reference/react/useContext  
+    Accessed: October 2025
+*  **TypeScript with React Native**  
+    Using TypeScript · React Native  
+    https://reactnative.dev/docs/typescript  
+    Accessed: October 2025
+*  **React Native Accessibility**  
+    Accessibility · React Native  
+    https://reactnative.dev/docs/accessibility  
+    Accessed: October 2025
+### GitHub & Version Control
+*  **GitHub Docs - Repository Management**  
+    About repositories - GitHub Docs  
+    https://docs.github.com/en/repositories  
+    Accessed: October 2025
+*  **Git Documentation**  
+    Git - Documentation  
+    https://git-scm.com/doc  
+    Accessed: October 2025
+### Community Resources
+*  **Stack Overflow - React Native**  
+    Newest 'react-native' Questions  
+    https://stackoverflow.com/questions/tagged/react-native  
+    Accessed: October 2025
+*  **React Native Community**  
+    React Native Community  
+    https://github.com/react-native-community  
+    Accessed: October 2025
+*  **Expo Forums**  
+    Expo Forums  
+    https://forums.expo.dev/  
+    Accessed: October 2025
+### Migration Guides
+*  **React Native Upgrade Helper**  
+    React Native Upgrade Helper  
+    https://react-native-community.github.io/upgrade-helper/  
+    Accessed: October 2025
+*  **Migrating from Web to React Native**  
+    Out-of-Tree Platforms · React Native  
+    https://reactnative.dev/docs/out-of-tree-platforms  
+    Accessed: October 2025
+### Testing & Quality
+*  **React Native Testing Library**  
+    React Native Testing Library  
+    https://callstack.github.io/react-native-testing-library/  
+    Accessed: October 2025
+*  **TypeScript ESLint**  
+    typescript-eslint  
+    https://typescript-eslint.io/  
+    Accessed: October 2025
+### Additional Resources
+*  **NPM Documentation**  
+    npm Docs  
+    https://docs.npmjs.com/  
+    Accessed: October 2025
+*  **Node.js Documentation**  
+    Node.js Documentation  
+    https://nodejs.org/en/docs/  
+    Accessed: October 2025
+*   **MDN Web Docs - JavaScript**  
+    JavaScript | MDN  
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript  
+    Accessed: October 2025
+*   **React Native Directory**  
+    React Native Directory  
+    https://reactnative.directory/  
+    Accessed: October 2025
+### Academic & Tutorial Resources
+*  **freeCodeCamp - React Native Tutorial**  
+    React Native Tutorial for Beginners  
+    https://www.freecodecamp.org/news/react-native-tutorial/  
+    Accessed: October 2025
+*  **Microsoft Learn - React Native**  
+    Introduction to React Native - Learn | Microsoft Docs  
+    https://learn.microsoft.com/en-us/training/modules/react-native-introduction/  
+    Accessed: October 2025
+### Image & Asset Resources
+*  **React Native Image Component**  
+    Image · React Native  
+    https://reactnative.dev/docs/image  
+    Accessed: October 2025
+*  **SVG Support in React Native**  
+    react-native-svg  
+    https://github.com/software-mansion/react-native-svg  
+    Accessed: October 2025
+### License Information
+*  **React Native License**  
+    React Native is MIT licensed  
+    https://github.com/facebook/react-native/blob/main/LICENSE  
+    Accessed: October 2025
+
+---
+
+## Attribution
+
+This project uses open-source software licensed under various licenses including MIT, Apache 2.0, and BSD. All third-party libraries and dependencies are used in accordance with their respective licenses.
+
+### Key Contributors
+- **Facebook/Meta Open Source** - React Native core framework
+- **Expo Team** - Expo development platform and tools
+- **React Navigation Team** - Navigation library
+- **React Native Community** - Community-maintained packages and tools
+
+### Development Team
+- **Student ID:** ST10467774
+- **Project:** MAST POE - Chef Christoffel's Menu Management App
+- **Institution:** [Your Institution Name]
+- **Course:** Mobile Application Software Technology
+- **Year:** 2025
+
+
+
 
   
-
-
-
-
-
-  
-
-
-
-
-
-
-  ## 11. References
-
-
 
 
