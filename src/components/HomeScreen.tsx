@@ -1,5 +1,8 @@
-import { ChefHat, TrendingUp, List, Plus, SlidersHorizontal, Heart } from 'lucide-react';
 import React, { useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
+import { useThemeContext } from '../../styles/ThemeContext';
+import { colors } from '../../styles/colors';
+import Icon from 'react-native-vector-icons/Feather';
 
 interface MenuItem {
   id: string;
@@ -10,26 +13,23 @@ interface MenuItem {
   course?: string;
   prepTime?: string;
 }
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Card } from './ui/card';
 
 const DEFAULT_PLACEHOLDER = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect fill="%23f3f4f6" width="100%" height="100%"/><text x="50%" y="50%" fill="%23909ca3" font-family="Arial" font-size="24" text-anchor="middle" dy=".3em">No image</text></svg>';
 
 type ImageWithFallbackProps = {
   src?: string | undefined;
   alt?: string;
-  className?: string;
+  style?: any;
   fallback?: string;
 };
 
-function ImageWithFallback({ src, alt, className, fallback }: ImageWithFallbackProps) {
-  const [currentSrc, setCurrentSrc] = useState<string>(src || fallback || DEFAULT_PLACEHOLDER);
+function ImageWithFallback({ src, alt, style, fallback }: ImageWithFallbackProps) {
+  const [currentSrc, setCurrentSrc] = useState<{ uri: string } | null>(src ? { uri: src } : null);
   const handleError = () => {
     const next = fallback || DEFAULT_PLACEHOLDER;
-    if (currentSrc !== next) setCurrentSrc(next);
+    if (currentSrc?.uri !== next) setCurrentSrc({ uri: next });
   };
-  return <img src={currentSrc} alt={alt} className={className} onError={handleError} />;
+  return <Image source={currentSrc} style={style} onError={handleError} />;
 }
 
 interface HomeScreenProps {
@@ -42,130 +42,277 @@ interface HomeScreenProps {
 }
 
 export function HomeScreen({ menuItems, favorites, onAddNew, onViewDetails, onToggleFavorite, onFilter }: HomeScreenProps) {
+  const { colorScheme } = useThemeContext();
+  const styles = getStyles(colorScheme);
+
   const averagePrice = menuItems.length > 0
     ? menuItems.reduce((sum, item) => sum + item.price, 0) / menuItems.length
     : 0;
 
   const featuredItems = menuItems;
 
+  const renderItem = ({ item }: { item: MenuItem }) => (
+    <TouchableOpacity style={styles.card} onPress={() => onViewDetails(item)}>
+      <View style={styles.cardImageContainer}>
+        <ImageWithFallback src={item.image} style={styles.cardImage} />
+        <TouchableOpacity
+          style={styles.favoriteButton}
+          onPress={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(item.id);
+          }}
+        >
+          <Icon name="heart" size={16} color={favorites.has(item.id) ? 'red' : colors[colorScheme].text} />
+        </TouchableOpacity>
+        <View style={styles.courseBadge}>
+          <Text style={styles.courseBadgeText}>{item.course}</Text>
+        </View>
+      </View>
+      <View style={styles.cardContent}>
+        <Text style={styles.cardTitle}>{item.dishName}</Text>
+        <Text style={styles.cardDescription} numberOfLines={2}>{item.description}</Text>
+        <View style={styles.cardFooter}>
+          <Text style={styles.price}>R{item.price.toFixed(2)}</Text>
+          <Text style={styles.prepTime}>{item.prepTime}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-white shadow-2xl pb-20">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white p-6 pb-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <ChefHat className="w-8 h-8" />
-            <div>
-              <h1 className="text-2xl">Chef Christoffel</h1>
-              <p className="text-amber-100 text-sm">Private Dining Experiences</p>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onFilter}
-            className="text-white hover:bg-white/20"
-          >
-            <SlidersHorizontal className="w-5 h-5" />
-          </Button>
-        </div>
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Icon name="coffee" size={28} color={colors[colorScheme].text} />
+          <View>
+            <Text style={styles.headerTitle}>Chef Christoffel</Text>
+            <Text style={styles.headerSubtitle}>Private Dining Experiences</Text>
+          </View>
+        </View>
+        <TouchableOpacity onPress={onFilter}>
+          <Icon name="sliders" size={20} color={colors[colorScheme].text} />
+        </TouchableOpacity>
+      </View>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-4">
-            <p className="text-xs text-amber-100 mb-1">Total Dishes</p>
-            <p className="text-2xl">{menuItems.length}</p>
-          </Card>
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <TrendingUp className="w-4 h-4 text-amber-200" />
-              <p className="text-xs text-amber-100">Avg. Price</p>
-            </div>
-            <p className="text-2xl">R{averagePrice.toFixed(0)}</p>
-          </Card>
-        </div>
-      </div>
+      <View style={styles.statsContainer}>
+        <View style={styles.statCard}>
+          <Text style={styles.statLabel}>Total Dishes</Text>
+          <Text style={styles.statValue}>{menuItems.length}</Text>
+        </View>
+        <View style={styles.statCard}>
+          <View style={styles.statLabelContainer}>
+            <Icon name="trending-up" size={16} color={colors[colorScheme].primary} />
+            <Text style={styles.statLabel}>Avg. Price</Text>
+          </View>
+          <Text style={styles.statValue}>R{averagePrice.toFixed(0)}</Text>
+        </View>
+      </View>
 
-      {/* Menu Section */}
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-xl text-gray-900">Featured Menu</h2>
-            <p className="text-sm text-gray-600">Curated dining experiences</p>
-          </div>
-          <Button
-            onClick={onAddNew}
-            size="sm"
-            className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700"
-          >
-            <Plus className="w-4 h-4 mr-1" />
-            Add
-          </Button>
-        </div>
+      <View style={styles.menuSection}>
+        <View style={styles.menuHeader}>
+          <View>
+            <Text style={styles.menuTitle}>Featured Menu</Text>
+            <Text style={styles.menuSubtitle}>Curated dining experiences</Text>
+          </View>
+          <TouchableOpacity style={styles.addButton} onPress={onAddNew}>
+            <Icon name="plus" size={16} color={colors.dark.text} />
+            <Text style={styles.addButtonText}>Add</Text>
+          </TouchableOpacity>
+        </View>
 
         {featuredItems.length === 0 ? (
-          <div className="text-center py-16">
-            <ChefHat className="w-16 h-16 mx-auto text-amber-300 mb-4" />
-            <p className="text-gray-500 mb-2">No menu items yet</p>
-            <p className="text-sm text-gray-400 mb-4">
-              Start building your menu by adding items
-            </p>
-            <Button
-              onClick={onAddNew}
-              className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Menu Item
-            </Button>
-          </div>
+          <View style={styles.emptyContainer}>
+            <Icon name="coffee" size={64} color={colors[colorScheme].primary} />
+            <Text style={styles.emptyText}>No menu items yet</Text>
+            <Text style={styles.emptySubtitle}>Start building your menu by adding items</Text>
+            <TouchableOpacity style={styles.addButton} onPress={onAddNew}>
+              <Icon name="plus" size={16} color={colors.dark.text} />
+              <Text style={styles.addButtonText}>Add Menu Item</Text>
+            </TouchableOpacity>
+          </View>
         ) : (
-          <div className="grid grid-cols-2 gap-4">
-            {featuredItems.map((item) => (
-              <Card
-                key={item.id}
-                className="overflow-hidden hover:shadow-xl transition-all cursor-pointer border-amber-100 group"
-                onClick={() => onViewDetails(item)}
-              >
-                <div className="relative aspect-square">
-                  <ImageWithFallback
-                    src={item.image}
-                    alt={item.dishName}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onToggleFavorite(item.id);
-                    }}
-                    className="absolute top-2 right-2 bg-white/90 hover:bg-white shadow-md"
-                  >
-                    <Heart
-                      className={`w-4 h-4 ${
-                        favorites.has(item.id)
-                          ? 'fill-red-500 text-red-500'
-                          : 'text-gray-600'
-                      }`}
-                    />
-                  </Button>
-                  <Badge className="absolute bottom-2 left-2 bg-amber-600 text-white border-0">
-                    {item.course}
-                  </Badge>
-                </div>
-                <div className="p-3">
-                  <h3 className="text-sm mb-1 line-clamp-1">{item.dishName}</h3>
-                  <p className="text-xs text-gray-600 mb-2 line-clamp-2">{item.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-amber-700">R{item.price.toFixed(2)}</span>
-                    <span className="text-xs text-gray-500">{item.prepTime}</span>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+          <FlatList
+            data={featuredItems}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            numColumns={2}
+            columnWrapperStyle={{ justifyContent: 'space-between' }}
+          />
         )}
-      </div>
-    </div>
+      </View>
+    </ScrollView>
   );
 }
+
+const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors[colorScheme].background,
+  },
+  header: {
+    backgroundColor: colors[colorScheme].primary,
+    padding: 24,
+    paddingBottom: 32,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors[colorScheme].text,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: colors[colorScheme].text,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingHorizontal: 24,
+    marginTop: -16,
+  },
+  statCard: {
+    backgroundColor: colors[colorScheme].card,
+    borderRadius: 12,
+    padding: 16,
+    flex: 1,
+    marginHorizontal: 8,
+    borderWidth: 1,
+    borderColor: colors[colorScheme].border,
+    alignItems: 'center',
+  },
+  statLabelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: colors[colorScheme].text,
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors[colorScheme].text,
+  },
+  menuSection: {
+    padding: 24,
+  },
+  menuHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  menuTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors[colorScheme].text,
+  },
+  menuSubtitle: {
+    fontSize: 14,
+    color: colors[colorScheme].text,
+  },
+  addButton: {
+    backgroundColor: colors[colorScheme].primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    gap: 4,
+  },
+  addButtonText: {
+    color: colors.dark.text,
+    fontWeight: 'bold',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    paddingVertical: 64,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: colors[colorScheme].text,
+    marginTop: 16,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: colors[colorScheme].text,
+    marginTop: 4,
+    marginBottom: 16,
+  },
+  card: {
+    backgroundColor: colors[colorScheme].card,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors[colorScheme].border,
+    overflow: 'hidden',
+    marginBottom: 16,
+    width: '48%',
+  },
+  cardImageContainer: {
+    position: 'relative',
+    aspectRatio: 1,
+  },
+  cardImage: {
+    width: '100%',
+    height: '100%',
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    padding: 4,
+    borderRadius: 16,
+  },
+  courseBadge: {
+    position: 'absolute',
+    bottom: 8,
+    left: 8,
+    backgroundColor: colors[colorScheme].primary,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+  },
+  courseBadgeText: {
+    color: colors.dark.text,
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  cardContent: {
+    padding: 12,
+  },
+  cardTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: colors[colorScheme].text,
+    marginBottom: 4,
+  },
+  cardDescription: {
+    fontSize: 12,
+    color: colors[colorScheme].text,
+    marginBottom: 8,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  price: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: colors[colorScheme].primary,
+  },
+  prepTime: {
+    fontSize: 12,
+    color: colors[colorScheme].text,
+  },
+});

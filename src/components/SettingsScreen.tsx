@@ -1,10 +1,8 @@
-import { Settings as SettingsIcon, Bell, DollarSign, Utensils, Info, ChefHat } from 'lucide-react';
-import { Card } from './ui/card';
-import { Switch } from './ui/switch';
-import { Label } from './ui/label';
-import { Badge } from './ui/badge';
-import { Separator } from './ui/separator';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import React from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { useThemeContext } from '../../styles/ThemeContext';
+import { colors } from '../../styles/colors';
+import Icon from 'react-native-vector-icons/Feather';
 
 interface SettingsScreenProps {
   settings: {
@@ -16,141 +14,270 @@ interface SettingsScreenProps {
 }
 
 export function SettingsScreen({ settings, onUpdateSettings }: SettingsScreenProps) {
+  const { colorScheme, setColorScheme } = useThemeContext();
   const dietaryOptions = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Nut-Free', 'Halal', 'Kosher'];
 
   const toggleDietaryPreference = (pref: string) => {
     const newPrefs = settings.dietaryPreferences.includes(pref)
       ? settings.dietaryPreferences.filter(p => p !== pref)
       : [...settings.dietaryPreferences, pref];
-    
+
     onUpdateSettings({ ...settings, dietaryPreferences: newPrefs });
   };
 
+  const styles = getStyles(colorScheme);
+
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-white shadow-2xl pb-20">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white p-6">
-        <div className="flex items-center gap-3">
-          <SettingsIcon className="w-7 h-7" />
-          <div>
-            <h1 className="text-2xl">Settings</h1>
-            <p className="text-amber-100 text-sm">Customize your experience</p>
-          </div>
-        </div>
-      </div>
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Icon name="settings" size={28} color={colors[colorScheme].text} />
+        <View>
+          <Text style={styles.headerTitle}>Settings</Text>
+          <Text style={styles.headerSubtitle}>Customize your experience</Text>
+        </View>
+      </View>
 
-      <div className="p-6 space-y-6">
-        {/* General Settings */}
-        <Card className="p-5 border-amber-100">
-          <div className="flex items-center gap-2 mb-4">
-            <SettingsIcon className="w-5 h-5 text-amber-700" />
-            <h2 className="text-lg text-gray-900">General</h2>
-          </div>
+      <View style={styles.content}>
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Icon name="settings" size={20} color={colors[colorScheme].primary} />
+            <Text style={styles.cardTitle}>General</Text>
+          </View>
 
-          <div className="space-y-4">
-            {/* Currency */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <DollarSign className="w-4 h-4 text-gray-600" />
-                <Label className="text-gray-700">Currency</Label>
-              </div>
-              <Select
-                value={settings.currency}
-                onValueChange={(value) => onUpdateSettings({ ...settings, currency: value })}
-              >
-                <SelectTrigger className="border-amber-200">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ZAR">South African Rand (R)</SelectItem>
-                  <SelectItem value="USD">US Dollar ($)</SelectItem>
-                  <SelectItem value="EUR">Euro (€)</SelectItem>
-                  <SelectItem value="GBP">British Pound (£)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <View style={styles.cardContent}>
+            <View style={styles.row}>
+              <View style={styles.rowLabel}>
+                <Icon name="moon" size={16} color={colors[colorScheme].text} />
+                <Text style={styles.labelText}>Theme</Text>
+              </View>
+              <View style={styles.themeSwitcher}>
+                <TouchableOpacity onPress={() => setColorScheme('light')} style={[styles.themeButton, colorScheme === 'light' && styles.activeThemeButton]}>
+                  <Icon name="sun" size={16} color={colorScheme === 'light' ? colors.dark.text : colors.light.text} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setColorScheme('dark')} style={[styles.themeButton, colorScheme === 'dark' && styles.activeThemeButton]}>
+                  <Icon name="moon" size={16} color={colorScheme === 'dark' ? colors.light.text : colors.dark.text} />
+                </TouchableOpacity>
+              </View>
+            </View>
 
-            <Separator className="bg-amber-100" />
+            <View style={styles.separator} />
 
-            {/* Notifications */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Bell className="w-4 h-4 text-gray-600" />
-                <Label className="text-gray-700">Notifications</Label>
-              </div>
-              <Switch
-                checked={settings.notifications}
-                onCheckedChange={(checked) => onUpdateSettings({ ...settings, notifications: checked })}
-              />
-            </div>
-          </div>
-        </Card>
+            <View style={styles.row}>
+              <View style={styles.rowLabel}>
+                <Icon name="dollar-sign" size={16} color={colors[colorScheme].text} />
+                <Text style={styles.labelText}>Currency</Text>
+              </View>
+              {/* Add your currency picker here */}
+            </View>
 
-        {/* Dietary Preferences */}
-        <Card className="p-5 border-amber-100">
-          <div className="flex items-center gap-2 mb-4">
-            <Utensils className="w-5 h-5 text-amber-700" />
-            <h2 className="text-lg text-gray-900">Dietary Preferences</h2>
-          </div>
-          <p className="text-sm text-gray-600 mb-4">
-            Select your dietary requirements to see relevant dishes
-          </p>
-          <div className="flex flex-wrap gap-2">
+            <View style={styles.separator} />
+
+            <View style={styles.row}>
+              <View style={styles.rowLabel}>
+                <Icon name="bell" size={16} color={colors[colorScheme].text} />
+                <Text style={styles.labelText}>Notifications</Text>
+              </View>
+              {/* Add your switch here */}
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Icon name="coffee" size={20} color={colors[colorScheme].primary} />
+            <Text style={styles.cardTitle}>Dietary Preferences</Text>
+          </View>
+          <Text style={styles.cardDescription}>Select your dietary requirements to see relevant dishes</Text>
+          <View style={styles.badgeContainer}>
             {dietaryOptions.map((pref) => (
-              <Badge
-                key={pref}
-                onClick={() => toggleDietaryPreference(pref)}
-                className={`cursor-pointer transition-all ${
-                  settings.dietaryPreferences.includes(pref)
-                    ? 'bg-amber-600 hover:bg-amber-700 text-white'
-                    : 'bg-white hover:bg-amber-100 text-amber-900 border-amber-300'
-                }`}
-              >
-                {pref}
-              </Badge>
+              <TouchableOpacity key={pref} onPress={() => toggleDietaryPreference(pref)} style={[styles.badge, settings.dietaryPreferences.includes(pref) && styles.activeBadge]}>
+                <Text style={settings.dietaryPreferences.includes(pref) ? styles.activeBadgeText : styles.badgeText}>{pref}</Text>
+              </TouchableOpacity>
             ))}
-          </div>
-        </Card>
+          </View>
+        </View>
 
-        {/* About */}
-        <Card className="p-5 border-amber-100 bg-gradient-to-br from-amber-50 to-orange-50">
-          <div className="flex items-center gap-2 mb-4">
-            <Info className="w-5 h-5 text-amber-700" />
-            <h2 className="text-lg text-gray-900">About</h2>
-          </div>
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <ChefHat className="w-12 h-12 text-amber-600 flex-shrink-0" />
-              <div>
-                <h3 className="text-amber-900 mb-1">Chef Christoffel</h3>
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  Premium private dining experiences tailored to your preferences. Showcasing the finest 
-                  South African and international cuisine with exceptional service.
-                </p>
-              </div>
-            </div>
-            <Separator className="bg-amber-200" />
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-gray-600">Version</p>
-                <p className="text-gray-900">1.0.0</p>
-              </div>
-              <div>
-                <p className="text-gray-600">Platform</p>
-                <p className="text-gray-900">Mobile App</p>
-              </div>
-            </div>
-          </div>
-        </Card>
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Icon name="info" size={20} color={colors[colorScheme].primary} />
+            <Text style={styles.cardTitle}>About</Text>
+          </View>
+          <View style={styles.aboutContainer}>
+            <Icon name="user" size={48} color={colors[colorScheme].primary} />
+            <View style={styles.aboutTextContainer}>
+              <Text style={styles.aboutTitle}>Chef Christoffel</Text>
+              <Text style={styles.aboutDescription}>Premium private dining experiences tailored to your preferences. Showcasing the finest South African and international cuisine with exceptional service.</Text>
+            </View>
+          </View>
+          <View style={styles.separator} />
+          <View style={styles.versionContainer}>
+            <View>
+              <Text style={styles.versionLabel}>Version</Text>
+              <Text style={styles.versionText}>1.0.0</Text>
+            </View>
+            <View>
+              <Text style={styles.versionLabel}>Platform</Text>
+              <Text style={styles.versionText}>Mobile App</Text>
+            </View>
+          </View>
+        </View>
 
-        {/* App Info */}
-        <div className="text-center text-sm text-gray-500 py-4">
-          <p>Portfolio of Evidence Project</p>
-          <p className="text-xs text-gray-400 mt-1">
-            Cross-platform Menu Management System
-          </p>
-        </div>
-      </div>
-    </div>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Portfolio of Evidence Project</Text>
+          <Text style={styles.footerSubtitle}>Cross-platform Menu Management System</Text>
+        </View>
+      </View>
+    </ScrollView>
   );
 }
+
+const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors[colorScheme].background,
+  },
+  header: {
+    backgroundColor: colors[colorScheme].primary,
+    padding: 24,
+    paddingBottom: 32,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors[colorScheme].text,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: colors[colorScheme].text,
+  },
+  content: {
+    padding: 24,
+    gap: 24,
+  },
+  card: {
+    backgroundColor: colors[colorScheme].card,
+    borderRadius: 12,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: colors[colorScheme].border,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors[colorScheme].text,
+  },
+  cardContent: {
+    gap: 16,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  rowLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  labelText: {
+    fontSize: 16,
+    color: colors[colorScheme].text,
+  },
+  themeSwitcher: {
+    flexDirection: 'row',
+    backgroundColor: colors[colorScheme].border,
+    borderRadius: 8,
+  },
+  themeButton: {
+    padding: 8,
+    borderRadius: 6,
+  },
+  activeThemeButton: {
+    backgroundColor: colors[colorScheme].primary,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors[colorScheme].border,
+  },
+  cardDescription: {
+    fontSize: 14,
+    color: colors[colorScheme].text,
+    marginBottom: 16,
+  },
+  badgeContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  badge: {
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors[colorScheme].primary,
+  },
+  activeBadge: {
+    backgroundColor: colors[colorScheme].primary,
+  },
+  badgeText: {
+    color: colors[colorScheme].primary,
+  },
+  activeBadgeText: {
+    color: colors[colorScheme].text,
+  },
+  aboutContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  aboutTextContainer: {
+    flex: 1,
+  },
+  aboutTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors[colorScheme].text,
+    marginBottom: 4,
+  },
+  aboutDescription: {
+    fontSize: 14,
+    color: colors[colorScheme].text,
+    lineHeight: 20,
+  },
+  versionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  versionLabel: {
+    fontSize: 14,
+    color: colors[colorScheme].text,
+  },
+  versionText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: colors[colorScheme].text,
+  },
+  footer: {
+    alignItems: 'center',
+    paddingVertical: 16,
+  },
+  footerText: {
+    fontSize: 14,
+    color: colors[colorScheme].text,
+  },
+  footerSubtitle: {
+    fontSize: 12,
+    color: colors[colorScheme].text,
+    marginTop: 4,
+  },
+});

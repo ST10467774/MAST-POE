@@ -1,12 +1,8 @@
-import { useState } from 'react';
-import { ArrowLeft, ChefHat, Save, Upload } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Card } from './ui/card';
-import { Badge } from './ui/badge';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { useThemeContext } from '../../styles/ThemeContext';
+import { colors } from '../../styles/colors';
+import Icon from 'react-native-vector-icons/Feather';
 
 interface AddMenuItemProps {
   onAdd: (item: {
@@ -30,6 +26,9 @@ interface AddMenuItemProps {
 }
 
 export function AddMenuItem({ onAdd, onCancel }: AddMenuItemProps) {
+  const { colorScheme } = useThemeContext();
+  const styles = getStyles(colorScheme);
+
   const [dishName, setDishName] = useState('');
   const [description, setDescription] = useState('');
   const [course, setCourse] = useState('');
@@ -55,17 +54,15 @@ export function AddMenuItem({ onAdd, onCancel }: AddMenuItemProps) {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     if (!dishName.trim() || !description.trim() || !course || !price || !prepTime) {
-      alert('Please fill in all required fields');
+      Alert.alert('Validation Error', 'Please fill in all required fields');
       return;
     }
 
     const priceNumber = parseFloat(price);
     if (isNaN(priceNumber) || priceNumber <= 0) {
-      alert('Please enter a valid price');
+      Alert.alert('Validation Error', 'Please enter a valid price');
       return;
     }
 
@@ -89,246 +86,254 @@ export function AddMenuItem({ onAdd, onCancel }: AddMenuItemProps) {
   };
 
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-white shadow-2xl pb-20">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white p-6 sticky top-0 z-10">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onCancel}
-            className="text-white hover:bg-white/20 -ml-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <ChefHat className="w-7 h-7" />
-          <div>
-            <h1 className="text-2xl">Add Menu Item</h1>
-            <p className="text-amber-100 text-sm">Create a new dish</p>
-          </div>
-        </div>
-      </div>
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={onCancel} style={styles.backButton}>
+          <Icon name="arrow-left" size={24} color={colors[colorScheme].text} />
+        </TouchableOpacity>
+        <Icon name="coffee" size={28} color={colors[colorScheme].text} />
+        <View>
+          <Text style={styles.headerTitle}>Add Menu Item</Text>
+          <Text style={styles.headerSubtitle}>Create a new dish</Text>
+        </View>
+      </View>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="p-6 space-y-6">
-        {/* Basic Information */}
-        <Card className="p-6 border-amber-100 bg-gradient-to-br from-amber-50/50 to-orange-50/50">
-          <h3 className="text-lg mb-4 text-amber-900">Basic Information</h3>
+      <View style={styles.form}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Basic Information</Text>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Dish Name *</Text>
+            <TextInput style={styles.input} value={dishName} onChangeText={setDishName} placeholder="e.g., Grilled Kingklip" />
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Description *</Text>
+            <TextInput style={[styles.input, styles.textarea]} value={description} onChangeText={setDescription} placeholder="Describe your dish..." multiline />
+          </View>
+          <View style={styles.row}>
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={styles.label}>Course *</Text>
+              {/* Replace with a custom picker */}
+              <TextInput style={styles.input} value={course} onChangeText={setCourse} placeholder="Select" />
+            </View>
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={styles.label}>Price (ZAR) *</Text>
+              <View style={styles.priceInputContainer}>
+                <Text style={styles.currencySymbol}>R</Text>
+                <TextInput style={[styles.input, styles.priceInput]} value={price} onChangeText={setPrice} placeholder="0.00" keyboardType="numeric" />
+              </View>
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={styles.label}>Prep Time *</Text>
+              <TextInput style={styles.input} value={prepTime} onChangeText={setPrepTime} placeholder="e.g., 30 min" />
+            </View>
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={styles.label}>Servings</Text>
+              <TextInput style={styles.input} value={servings} onChangeText={setServings} keyboardType="numeric" />
+            </View>
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Image URL</Text>
+            <View style={styles.row}>
+              <TextInput style={[styles.input, { flex: 1 }]} value={imageUrl} onChangeText={setImageUrl} placeholder="https://..." />
+              <TouchableOpacity style={styles.uploadButton}>
+                <Icon name="upload" size={20} color={colors[colorScheme].text} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="dishName" className="text-amber-900">
-                Dish Name *
-              </Label>
-              <Input
-                id="dishName"
-                value={dishName}
-                onChange={(e) => setDishName(e.target.value)}
-                placeholder="e.g., Grilled Kingklip"
-                className="border-amber-200 focus:border-amber-500 focus:ring-amber-500"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-amber-900">
-                Description *
-              </Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe your dish..."
-                rows={3}
-                className="border-amber-200 focus:border-amber-500 focus:ring-amber-500 resize-none"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="course" className="text-amber-900">
-                  Course *
-                </Label>
-                <Select value={course} onValueChange={setCourse}>
-                  <SelectTrigger className="border-amber-200 focus:border-amber-500">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {courses.map((c) => (
-                      <SelectItem key={c} value={c}>
-                        {c}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="price" className="text-amber-900">
-                  Price (ZAR) *
-                </Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-700">
-                    R
-                  </span>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    placeholder="0.00"
-                    className="pl-8 border-amber-200"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="prepTime" className="text-amber-900">
-                  Prep Time *
-                </Label>
-                <Input
-                  id="prepTime"
-                  value={prepTime}
-                  onChange={(e) => setPrepTime(e.target.value)}
-                  placeholder="e.g., 30 min"
-                  className="border-amber-200"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="servings" className="text-amber-900">
-                  Servings
-                </Label>
-                <Input
-                  id="servings"
-                  type="number"
-                  value={servings}
-                  onChange={(e) => setServings(e.target.value)}
-                  className="border-amber-200"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="imageUrl" className="text-amber-900">
-                Image URL
-              </Label>
-              <div className="flex gap-2">
-                <Input
-                  id="imageUrl"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="border-amber-200"
-                />
-                <Button type="button" variant="outline" size="icon" className="border-amber-300">
-                  <Upload className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Allergens */}
-        <Card className="p-6 border-amber-100">
-          <h3 className="text-lg mb-3 text-amber-900">Allergens</h3>
-          <div className="flex flex-wrap gap-2">
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Allergens</Text>
+          <View style={styles.badgeContainer}>
             {commonAllergens.map((allergen) => (
-              <Badge
-                key={allergen}
-                onClick={() => toggleAllergen(allergen)}
-                className={`cursor-pointer transition-all ${
-                  allergens.includes(allergen)
-                    ? 'bg-amber-600 hover:bg-amber-700 text-white'
-                    : 'bg-white hover:bg-amber-100 text-amber-900 border-amber-300'
-                }`}
-              >
-                {allergen}
-              </Badge>
+              <TouchableOpacity key={allergen} onPress={() => toggleAllergen(allergen)} style={[styles.badge, allergens.includes(allergen) && styles.activeBadge]}>
+                <Text style={allergens.includes(allergen) ? styles.activeBadgeText : styles.badgeText}>{allergen}</Text>
+              </TouchableOpacity>
             ))}
-          </div>
-        </Card>
+          </View>
+        </View>
 
-        {/* Nutritional Information */}
-        <Card className="p-6 border-amber-100">
-          <h3 className="text-lg mb-4 text-amber-900">Nutritional Info</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="calories">Calories</Label>
-              <Input
-                id="calories"
-                type="number"
-                value={calories}
-                onChange={(e) => setCalories(e.target.value)}
-                placeholder="0"
-                className="border-amber-200"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="protein">Protein</Label>
-              <Input
-                id="protein"
-                value={protein}
-                onChange={(e) => setProtein(e.target.value)}
-                placeholder="0g"
-                className="border-amber-200"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="carbs">Carbs</Label>
-              <Input
-                id="carbs"
-                value={carbs}
-                onChange={(e) => setCarbs(e.target.value)}
-                placeholder="0g"
-                className="border-amber-200"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="fat">Fat</Label>
-              <Input
-                id="fat"
-                value={fat}
-                onChange={(e) => setFat(e.target.value)}
-                placeholder="0g"
-                className="border-amber-200"
-              />
-            </div>
-          </div>
-        </Card>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Nutritional Info</Text>
+          <View style={styles.row}>
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={styles.label}>Calories</Text>
+              <TextInput style={styles.input} value={calories} onChangeText={setCalories} placeholder="0" keyboardType="numeric" />
+            </View>
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={styles.label}>Protein</Text>
+              <TextInput style={styles.input} value={protein} onChangeText={setProtein} placeholder="0g" />
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={styles.label}>Carbs</Text>
+              <TextInput style={styles.input} value={carbs} onChangeText={setCarbs} placeholder="0g" />
+            </View>
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={styles.label}>Fat</Text>
+              <TextInput style={styles.input} value={fat} onChangeText={setFat} placeholder="0g" />
+            </View>
+          </View>
+        </View>
 
-        {/* Wine Pairing */}
-        <Card className="p-6 border-amber-100">
-          <h3 className="text-lg mb-3 text-amber-900">Wine Pairing</h3>
-          <Input
-            value={winePairing}
-            onChange={(e) => setWinePairing(e.target.value)}
-            placeholder="e.g., Sauvignon Blanc"
-            className="border-amber-200"
-          />
-        </Card>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Wine Pairing</Text>
+          <TextInput style={styles.input} value={winePairing} onChangeText={setWinePairing} placeholder="e.g., Sauvignon Blanc" />
+        </View>
 
-        {/* Action Buttons */}
-        <div className="space-y-3 pt-4">
-          <Button
-            type="submit"
-            className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white py-6"
-          >
-            <Save className="w-5 h-5 mr-2" />
-            Save Menu Item
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            className="w-full border-amber-300 text-amber-700 hover:bg-amber-50"
-          >
-            Cancel
-          </Button>
-        </div>
-      </form>
-    </div>
+        <View style={styles.buttonGroup}>
+          <TouchableOpacity style={styles.saveButton} onPress={handleSubmit}>
+            <Icon name="save" size={20} color={colors.dark.text} />
+            <Text style={styles.saveButtonText}>Save Menu Item</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
+            <Text style={styles.cancelButtonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </ScrollView>
   );
 }
+
+const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors[colorScheme].background,
+  },
+  header: {
+    backgroundColor: colors[colorScheme].primary,
+    padding: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  backButton: {
+    marginRight: 8,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors[colorScheme].text,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: colors[colorScheme].text,
+  },
+  form: {
+    padding: 24,
+    gap: 24,
+  },
+  card: {
+    backgroundColor: colors[colorScheme].card,
+    borderRadius: 12,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: colors[colorScheme].border,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors[colorScheme].text,
+    marginBottom: 16,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    color: colors[colorScheme].text,
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: colors[colorScheme].background,
+    borderWidth: 1,
+    borderColor: colors[colorScheme].border,
+    borderRadius: 8,
+    padding: 12,
+    color: colors[colorScheme].text,
+  },
+  textarea: {
+    height: 100,
+    textAlignVertical: 'top',
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  priceInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors[colorScheme].background,
+    borderWidth: 1,
+    borderColor: colors[colorScheme].border,
+    borderRadius: 8,
+  },
+  currencySymbol: {
+    paddingLeft: 12,
+    color: colors[colorScheme].text,
+  },
+  priceInput: {
+    flex: 1,
+    borderWidth: 0,
+  },
+  uploadButton: {
+    borderWidth: 1,
+    borderColor: colors[colorScheme].border,
+    borderRadius: 8,
+    padding: 12,
+    justifyContent: 'center',
+  },
+  badgeContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  badge: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors[colorScheme].primary,
+  },
+  activeBadge: {
+    backgroundColor: colors[colorScheme].primary,
+  },
+  badgeText: {
+    color: colors[colorScheme].primary,
+  },
+  activeBadgeText: {
+    color: colors.dark.text,
+  },
+  buttonGroup: {
+    gap: 12,
+  },
+  saveButton: {
+    backgroundColor: colors[colorScheme].primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 8,
+    gap: 8,
+  },
+  saveButtonText: {
+    color: colors.dark.text,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  cancelButton: {
+    borderWidth: 1,
+    borderColor: colors[colorScheme].border,
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 8,
+  },
+  cancelButtonText: {
+    color: colors[colorScheme].text,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+});

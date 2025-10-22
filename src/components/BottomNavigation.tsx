@@ -1,6 +1,8 @@
-import { Home, Search, Heart, Settings } from 'lucide-react';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
+import { useThemeContext } from '../../styles/ThemeContext';
+import { colors } from '../../styles/colors';
 
 interface BottomNavigationProps {
   currentScreen: string;
@@ -9,44 +11,72 @@ interface BottomNavigationProps {
 }
 
 export function BottomNavigation({ currentScreen, onNavigate, favoriteCount }: BottomNavigationProps) {
+  const { colorScheme } = useThemeContext();
+  const styles = getStyles(colorScheme);
+
   const navItems = [
-    { id: 'home', icon: Home, label: 'Home' },
-    { id: 'search', icon: Search, label: 'Search' },
-    { id: 'favorites', icon: Heart, label: 'Favorites', count: favoriteCount },
-    { id: 'settings', icon: Settings, label: 'Settings' },
+    { id: 'home', icon: 'home', label: 'Home' },
+    { id: 'search', icon: 'search', label: 'Search' },
+    { id: 'favorites', icon: 'heart', label: 'Favorites', count: favoriteCount },
+    { id: 'settings', icon: 'settings', label: 'Settings' },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-amber-100 shadow-lg z-50">
-      <div className="flex items-center justify-around p-2">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = currentScreen === item.id;
-
-          return (
-            <Button
-              key={item.id}
-              variant="ghost"
-              onClick={() => onNavigate(item.id)}
-              className={`flex flex-col items-center gap-1 h-auto py-2 px-4 rounded-lg transition-all ${
-                isActive
-                  ? 'text-amber-700 bg-amber-50'
-                  : 'text-gray-600 hover:text-amber-700 hover:bg-amber-50/50'
-              }`}
-            >
-              <div className="relative">
-                <Icon className={`w-6 h-6 ${isActive ? 'fill-amber-700' : ''}`} />
-                {item.count !== undefined && item.count > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-red-500 text-white border-0 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                    {item.count}
-                  </Badge>
-                )}
-              </div>
-              <span className="text-xs">{item.label}</span>
-            </Button>
-          );
-        })}
-      </div>
-    </div>
+    <View style={styles.container}>
+      {navItems.map((item) => {
+        const isActive = currentScreen === item.id;
+        return (
+          <TouchableOpacity key={item.id} style={styles.navItem} onPress={() => onNavigate(item.id)}>
+            <Icon name={item.icon} size={24} color={isActive ? colors[colorScheme].primary : colors[colorScheme].text} />
+            <Text style={[styles.label, isActive && styles.activeLabel]}>{item.label}</Text>
+            {item.count !== undefined && item.count > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{item.count}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        );
+      })}
+    </View>
   );
 }
+
+const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: colors[colorScheme].card,
+    borderTopWidth: 1,
+    borderTopColor: colors[colorScheme].border,
+    height: 60,
+  },
+  navItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  label: {
+    fontSize: 12,
+    color: colors[colorScheme].text,
+  },
+  activeLabel: {
+    color: colors[colorScheme].primary,
+  },
+  badge: {
+    position: 'absolute',
+    top: -4,
+    right: 10,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+});

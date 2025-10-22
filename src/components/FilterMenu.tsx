@@ -1,6 +1,9 @@
-import { useState } from 'react';
-import { ArrowLeft, SlidersHorizontal, Heart } from 'lucide-react';
-// Local MenuItem type to avoid importing from ../App which may not export types or be in a different location
+import React, { useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { useThemeContext } from '../../styles/ThemeContext';
+import { colors } from '../../styles/colors';
+import Icon from 'react-native-vector-icons/Feather';
+
 interface MenuItem {
   id: string;
   dishName: string;
@@ -11,12 +14,6 @@ interface MenuItem {
   image?: string;
   prepTime?: string;
 }
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Card } from './ui/card';
-import { Slider } from './ui/slider';
-import { Label } from './ui/label';
-// Replaced ImageWithFallback with a native <img> element and inline fallback to avoid missing module
 
 interface FilterMenuProps {
   menuItems: MenuItem[];
@@ -27,6 +24,9 @@ interface FilterMenuProps {
 }
 
 export function FilterMenu({ menuItems, favorites, onBack, onViewDetails, onToggleFavorite }: FilterMenuProps) {
+  const { colorScheme } = useThemeContext();
+  const styles = getStyles(colorScheme);
+
   const [selectedCourse, setSelectedCourse] = useState<string>('All');
   const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
   const [selectedAllergens, setSelectedAllergens] = useState<string[]>([]);
@@ -48,178 +48,122 @@ export function FilterMenu({ menuItems, favorites, onBack, onViewDetails, onTogg
     setSelectedAllergens([]);
   };
 
-  // Apply filters
   const filteredItems = menuItems.filter(item => {
     const courseMatch = selectedCourse === 'All' || item.course === selectedCourse;
     const priceMatch = item.price >= priceRange[0] && item.price <= priceRange[1];
     const allergenMatch = selectedAllergens.length === 0 ||
       !item.allergens.some(a => selectedAllergens.includes(a));
-    
+
     return courseMatch && priceMatch && allergenMatch;
   });
 
+  const renderItem = ({ item }: { item: MenuItem }) => (
+    <TouchableOpacity style={styles.card} onPress={() => onViewDetails(item)}>
+      {/* ... card content ... */}
+    </TouchableOpacity>
+  );
+
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-white shadow-2xl pb-20">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white p-6 sticky top-0 z-10">
-        <div className="flex items-center gap-3 mb-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-            className="text-white hover:bg-white/20 -ml-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <SlidersHorizontal className="w-7 h-7" />
-          <div>
-            <h1 className="text-2xl">Filter Menu</h1>
-            <p className="text-amber-100 text-sm">{filteredItems.length} items found</p>
-          </div>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={clearFilters}
-          className="w-full bg-white/10 border-white/30 text-white hover:bg-white/20"
-        >
-          Clear All Filters
-        </Button>
-      </div>
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={onBack} style={styles.backButton}>
+          <Icon name="arrow-left" size={24} color={colors[colorScheme].text} />
+        </TouchableOpacity>
+        <Icon name="sliders" size={28} color={colors[colorScheme].text} />
+        <View>
+          <Text style={styles.headerTitle}>Filter Menu</Text>
+          <Text style={styles.headerSubtitle}>{filteredItems.length} items found</Text>
+        </View>
+      </View>
+      <TouchableOpacity onPress={clearFilters} style={styles.clearButton}>
+        <Text style={styles.clearButtonText}>Clear All Filters</Text>
+      </TouchableOpacity>
 
-      <div className="p-6 space-y-6">
-        {/* Course Filter */}
-        <Card className="p-4 border-amber-100">
-          <Label className="text-lg mb-3 block text-amber-900">Course Type</Label>
-          <div className="flex flex-wrap gap-2">
+      <View style={styles.content}>
+        <View style={styles.filterCard}>
+          <Text style={styles.filterTitle}>Course Type</Text>
+          <View style={styles.badgeContainer}>
             {courses.map((course) => (
-              <Badge
-                key={course}
-                onClick={() => setSelectedCourse(course)}
-                className={`cursor-pointer transition-all ${
-                  selectedCourse === course
-                    ? 'bg-amber-600 hover:bg-amber-700 text-white'
-                    : 'bg-white hover:bg-amber-100 text-amber-900 border-amber-300'
-                }`}
-              >
-                {course}
-              </Badge>
+              <TouchableOpacity key={course} onPress={() => setSelectedCourse(course)} style={[styles.badge, selectedCourse === course && styles.activeBadge]}>
+                <Text style={selectedCourse === course ? styles.activeBadgeText : styles.badgeText}>{course}</Text>
+              </TouchableOpacity>
             ))}
-          </div>
-        </Card>
+          </View>
+        </View>
 
-        {/* Price Range Filter */}
-        <Card className="p-4 border-amber-100">
-          <Label className="text-lg mb-3 block text-amber-900">Price Range</Label>
-          <div className="space-y-4">
-            <Slider
-              value={priceRange}
-              onValueChange={setPriceRange}
-              max={1000}
-              step={10}
-              className="w-full"
-            />
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-amber-700">R{priceRange[0]}</span>
-              <span className="text-gray-500">to</span>
-              <span className="text-amber-700">R{priceRange[1]}</span>
-            </div>
-          </div>
-        </Card>
+        <View style={styles.filterCard}>
+          <Text style={styles.filterTitle}>Price Range</Text>
+          {/* Slider component needs to be implemented or replaced */}
+          <View style={styles.priceRangeContainer}>
+            <Text style={styles.priceText}>R{priceRange[0]}</Text>
+            <Text style={styles.priceText}>to</Text>
+            <Text style={styles.priceText}>R{priceRange[1]}</Text>
+          </View>
+        </View>
 
-        {/* Allergen Filter */}
-        <Card className="p-4 border-amber-100">
-          <Label className="text-lg mb-3 block text-amber-900">Exclude Allergens</Label>
-          <div className="flex flex-wrap gap-2">
+        <View style={styles.filterCard}>
+          <Text style={styles.filterTitle}>Exclude Allergens</Text>
+          <View style={styles.badgeContainer}>
             {allergens.map((allergen) => (
-              <Badge
-                key={allergen}
-                onClick={() => toggleAllergen(allergen)}
-                className={`cursor-pointer transition-all ${
-                  selectedAllergens.includes(allergen)
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-white hover:bg-red-100 text-red-900 border-red-300'
-                }`}
-              >
-                {allergen}
-              </Badge>
+              <TouchableOpacity key={allergen} onPress={() => toggleAllergen(allergen)} style={[styles.badge, selectedAllergens.includes(allergen) && styles.activeAllergenBadge]}>
+                <Text style={selectedAllergens.includes(allergen) ? styles.activeBadgeText : styles.allergenBadgeText}>{allergen}</Text>
+              </TouchableOpacity>
             ))}
-          </div>
+          </View>
           {selectedAllergens.length > 0 && (
-            <p className="text-xs text-gray-600 mt-2">
-              Excluding items with: {selectedAllergens.join(', ')}
-            </p>
+            <Text style={styles.infoText}>Excluding items with: {selectedAllergens.join(', ')}</Text>
           )}
-        </Card>
+        </View>
 
-        {/* Results */}
-        <div>
-          <h2 className="text-lg mb-4 text-gray-900">
-            Filtered Results ({filteredItems.length})
-          </h2>
+        <View>
+          <Text style={styles.resultsTitle}>Filtered Results ({filteredItems.length})</Text>
           {filteredItems.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500 mb-2">No items match your filters</p>
-              <Button
-                onClick={clearFilters}
-                variant="outline"
-                className="border-amber-300 text-amber-700 hover:bg-amber-50"
-              >
-                Clear Filters
-              </Button>
-            </div>
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No items match your filters</Text>
+              <TouchableOpacity onPress={clearFilters} style={styles.clearButtonAlt}>
+                <Text style={styles.clearButtonAltText}>Clear Filters</Text>
+              </TouchableOpacity>
+            </View>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
-              {filteredItems.map((item) => (
-                <Card
-                  key={item.id}
-                  className="overflow-hidden hover:shadow-xl transition-all cursor-pointer border-amber-100 group"
-                  onClick={() => onViewDetails(item)}
-                >
-                  <div className="relative aspect-square">
-                    <img
-                      src={item.image ?? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='}
-                      alt={item.dishName}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
-                      }}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleFavorite(item.id);
-                      }}
-                      className="absolute top-2 right-2 bg-white/90 hover:bg-white shadow-md"
-                    >
-                      <Heart
-                        className={`w-4 h-4 ${
-                          favorites.has(item.id)
-                            ? 'fill-red-500 text-red-500'
-                            : 'text-gray-600'
-                        }`}
-                      />
-                    </Button>
-                    <Badge className="absolute bottom-2 left-2 bg-amber-600 text-white border-0">
-                      {item.course}
-                    </Badge>
-                  </div>
-                  <div className="p-3">
-                    <h3 className="text-sm mb-1 line-clamp-1">{item.dishName}</h3>
-                    <p className="text-xs text-gray-600 mb-2 line-clamp-2">{item.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-amber-700">R{item.price.toFixed(2)}</span>
-                      <span className="text-xs text-gray-500">{item.prepTime}</span>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <FlatList
+              data={filteredItems}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              numColumns={2}
+              columnWrapperStyle={{ justifyContent: 'space-between' }}
+            />
           )}
-        </div>
-      </div>
-    </div>
+        </View>
+      </View>
+    </ScrollView>
   );
 }
+
+const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors[colorScheme].background },
+  header: { backgroundColor: colors[colorScheme].primary, padding: 24, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  backButton: { marginRight: 8 },
+  headerTitle: { fontSize: 24, fontWeight: 'bold', color: colors[colorScheme].text },
+  headerSubtitle: { fontSize: 14, color: colors[colorScheme].text },
+  clearButton: { backgroundColor: 'rgba(255, 255, 255, 0.1)', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.3)', padding: 8, borderRadius: 8, margin: 24, alignItems: 'center' },
+  clearButtonText: { color: 'white', fontWeight: 'bold' },
+  content: { paddingHorizontal: 24, gap: 24 },
+  filterCard: { backgroundColor: colors[colorScheme].card, borderRadius: 12, padding: 16, borderWidth: 1, borderColor: colors[colorScheme].border },
+  filterTitle: { fontSize: 18, fontWeight: 'bold', color: colors[colorScheme].text, marginBottom: 12 },
+  badgeContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  badge: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20, borderWidth: 1, borderColor: colors[colorScheme].primary },
+  activeBadge: { backgroundColor: colors[colorScheme].primary },
+  badgeText: { color: colors[colorScheme].primary },
+  activeBadgeText: { color: colors.dark.text },
+  priceRangeContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 },
+  priceText: { fontSize: 16, color: colors[colorScheme].text },
+  activeAllergenBadge: { backgroundColor: '#b91c1c' },
+  allergenBadgeText: { color: '#b91c1c' },
+  infoText: { fontSize: 12, color: colors[colorScheme].text, marginTop: 8 },
+  resultsTitle: { fontSize: 18, fontWeight: 'bold', color: colors[colorScheme].text, marginBottom: 16 },
+  emptyContainer: { alignItems: 'center', paddingVertical: 48 },
+  emptyText: { fontSize: 16, color: colors[colorScheme].text, marginBottom: 16 },
+  clearButtonAlt: { borderWidth: 1, borderColor: colors[colorScheme].primary, padding: 12, borderRadius: 8 },
+  clearButtonAltText: { color: colors[colorScheme].primary, fontWeight: 'bold' },
+  card: { flex: 1 },
+});
